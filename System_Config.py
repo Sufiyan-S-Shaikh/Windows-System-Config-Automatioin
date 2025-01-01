@@ -96,6 +96,14 @@ def enable_wifi():
         logging.error(f"Failed to enable Wi-Fi: {e}")
 
 
+def launch_program(program_path):
+    try:
+        subprocess.Popen([program_path], shell=True)
+        logging.info(f"Launched program: {program_path}")
+    except Exception as e:
+        logging.error(f"Failed to launch program: {e}")
+
+
 def main():
     logging.info("Starting system configuration script.")
 
@@ -107,6 +115,9 @@ def main():
 
     # Turn on Wi-Fi
     enable_wifi()
+
+    # Launch a program (example: Web Browser)
+    launch_program(r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")
 
     logging.info("System configuration completed.")
 
