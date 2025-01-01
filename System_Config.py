@@ -4,6 +4,8 @@ from ctypes import cast, POINTER
 from pycaw.pycaw import IAudioEndpointVolume
 import subprocess
 import logging
+import time
+import pyautogui
 
 # Configure logging
 logging.basicConfig(
@@ -39,20 +41,59 @@ def set_volume(level):
     except Exception as e:
         logging.error(f"Failed to set volume: {e}")
 
+
+def is_wifi_off():
+    try:
+        # Run the netsh command to check Wi-Fi status
+        result = subprocess.run(
+            ["netsh", "interface", "show", "interface"],
+            capture_output=True, text=True
+        )
+        # Look for a specific line indicating Wi-Fi status
+        output = result.stdout
+        for line in output.splitlines():
+            if "Wi-Fi" in line:
+                if "Disconnected" in line:
+                    return True
+                elif "Connected" in line:
+                    return False
+    except Exception as e:
+        logging.error(f"Error checking Wi-Fi status: {e}")
+        return False
+
+
+def click_coordinates(coords, delay=2):
+    try:
+        logging.info(f"Moving to coordinates: {coords}")
+        time.sleep(delay)  # Wait before clicking
+        pyautogui.moveTo(coords)  # Move to the specified coordinates
+        pyautogui.click()  # Perform the click
+        logging.info(f"Clicked at: {coords}")
+    except Exception as e:
+        logging.error(f"Failed to click at coordinates {coords}: {e}")
+
+
 def enable_wifi():
     try:
-        result = subprocess.run(
-            "netsh interface set interface \"Wi-Fi\" enable",
-            shell=True,
-            capture_output=True,
-            text=True
-        )
-        if result.returncode == 0:
-            logging.info("Wi-Fi enabled successfully.")
+        logging.info("Checking Wi-Fi status...")
+        if is_wifi_off():
+            logging.info("Wi-Fi is off. Proceeding with click operations.")
+            time.sleep(3)  # Wait for 3 seconds before starting
+
+            coords_1 = (1701, 1049)  # Replace with your actual coordinates
+            coords_2 = (1519, 981)  # Replace with your actual coordinates
+
+            # First click
+            click_coordinates(coords_1)
+
+            # Second click
+            click_coordinates(coords_2)
+
+            logging.info("Wi-Fi has been turned on.")
         else:
-            logging.error(f"Failed to enable Wi-Fi: {result.stderr}")
+            logging.info("Wi-Fi already turned on. No actions needed.")
     except Exception as e:
-        logging.error(f"Error enabling Wi-Fi: {e}")
+        logging.error(f"Failed to enable Wi-Fi: {e}")
 
 
 def main():
