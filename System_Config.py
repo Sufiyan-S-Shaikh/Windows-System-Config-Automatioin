@@ -6,6 +6,8 @@ import subprocess
 import logging
 import time
 import pyautogui
+from plyer import notification
+
 
 # Configure logging
 logging.basicConfig(
@@ -22,8 +24,10 @@ def set_brightness(brightness):
 
         sbc.set_brightness(brightness)
         logging.info(f"Brightness set to {brightness}%.")
+        send_notification("Brightness Update", f"Brightness set to {brightness}% successfully.")
     except Exception as e:
         logging.error(f"Failed to set brightness: {e}")
+        send_notification("Brightness Update Failed", str(e))
 
 
 def set_volume(level):
@@ -38,8 +42,10 @@ def set_volume(level):
         volume = cast(interface, POINTER(IAudioEndpointVolume))
         volume.SetMasterVolumeLevelScalar(level, None)
         logging.info(f"Volume set to {int(level * 100)}%.")
+        send_notification("Volume Update", f"Volume set to {int(level * 100)}% successfully.")
     except Exception as e:
         logging.error(f"Failed to set volume: {e}")
+        send_notification("Volume Update Failed", str(e))
 
 
 def is_wifi_off():
@@ -90,10 +96,13 @@ def enable_wifi():
             click_coordinates(coords_2)
 
             logging.info("Wi-Fi has been turned on.")
+            send_notification("Wi-Fi Update", "Wi-Fi has been turned on successfully.")
         else:
             logging.info("Wi-Fi already turned on. No actions needed.")
+            send_notification("Wi-Fi Update", "Wi-Fi is already on. No actions needed.")
     except Exception as e:
         logging.error(f"Failed to enable Wi-Fi: {e}")
+        send_notification("Wi-Fi Update Failed", str(e))
 
 
 def launch_program(program_path):
@@ -102,6 +111,19 @@ def launch_program(program_path):
         logging.info(f"Launched program: {program_path}")
     except Exception as e:
         logging.error(f"Failed to launch program: {e}")
+
+
+def send_notification(title, message):
+    try:
+        notification.notify(
+            title=title,
+            message=message,
+            app_name="System Config Script",
+            timeout=10
+        )
+        logging.info(f"Notification sent: {title} - {message}")
+    except Exception as e:
+        logging.error(f"Failed to send notification: {e}")
 
 
 def main():
@@ -118,6 +140,9 @@ def main():
 
     # Launch a program (example: Web Browser)
     launch_program(r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe")
+
+    # Send a notification
+    send_notification("Startup Configuration", "Brightness, volume, and Wi-Fi settings applied.")
 
     logging.info("System configuration completed.")
 
