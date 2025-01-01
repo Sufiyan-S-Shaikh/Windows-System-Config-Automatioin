@@ -7,7 +7,8 @@ import logging
 import time
 import pyautogui
 from plyer import notification
-
+import schedule
+import psutil
 
 # Configure logging
 logging.basicConfig(
@@ -126,6 +127,41 @@ def send_notification(title, message):
         logging.error(f"Failed to send notification: {e}")
 
 
+def monitor_system():
+    try:
+        cpu_usage = psutil.cpu_percent(interval=1)
+        memory_info = psutil.virtual_memory()
+
+        if cpu_usage > 80:
+            message = f"CPU usage is at {cpu_usage}%!"
+            send_notification("High CPU Usage", message)
+            logging.warning(message)
+
+        if memory_info.percent > 80:
+            message = f"Memory usage is at {memory_info.percent}%!"
+            send_notification("High Memory Usage", message)
+            logging.warning(message)
+
+        logging.info("System health monitoring completed.")
+    except Exception as e:
+        logging.error(f"Failed to monitor system health: {e}")
+
+
+def schedule_tasks():
+    try:
+        schedule.every(45).minutes.do(lambda: send_notification("Break Reminder", "Time to take a break!"))
+        schedule.every().hour.do(monitor_system)
+        logging.info("Scheduled tasks set up successfully.")
+    except Exception as e:
+        logging.error(f"Failed to schedule tasks: {e}")
+
+
+def run_scheduled_tasks():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+
 def main():
     logging.info("Starting system configuration script.")
 
@@ -144,7 +180,11 @@ def main():
     # Send a notification
     send_notification("Startup Configuration", "Brightness, volume, and Wi-Fi settings applied.")
 
-    logging.info("System configuration completed.")
+    # Schedule tasks
+    schedule_tasks()
+
+    logging.info("System configuration completed. Running scheduled tasks.")
+    run_scheduled_tasks()
 
 
 if __name__ == "__main__":
