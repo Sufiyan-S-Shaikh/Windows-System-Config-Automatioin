@@ -1,0 +1,6 @@
+2025-01-01 12:24:10,868 - INFO - Starting system configuration script.
+2025-01-01 12:24:10,896 - WARNING - exception parsing edid str for DISPLAY\LGD044F\4&1bdb7018&0&UID265988_0 - EDIDParseError: parsed EDID returned invalid display name
+2025-01-01 12:24:10,911 - INFO - Brightness set to 75%.
+2025-01-01 12:24:10,915 - INFO - Volume set to 30%.
+2025-01-01 12:24:11,099 - INFO - Wi-Fi enabled successfully.
+2025-01-01 12:24:11,099 - INFO - System configuration completed.
